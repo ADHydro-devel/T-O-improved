@@ -1,0 +1,39 @@
+#! octave-interpreter-name -qf
+# sample
+printf("\n-----------------Hello world-----------------!\n");
+
+# f.out: time(s), rainfall rate (cm/hr), accum_rain (cm), infiltration rate (cm/hr), accum_infil (cm), groundwater recharge rate(cm/hr), accum_recharge(cm), ET(cm).
+data = load ("f.out");
+h_fig = figure(1); hold on;
+
+plot(data(:, 1) / 3600.0, data(:, 2), ':b');
+plot(data(:, 1) / 3600.0, data(:, 4), 'xr');
+plot(data(:, 1) / 3600.0, data(:, 6), 'ok');
+legend('Rainfall', 'Infiltration', 'Recharge');
+xlabel('Time (hr)');
+ylabel('f (cm/hr)');
+
+h_fig2 = figure(2); hold on;
+plot(data(:, 1) / 3600.0, data(:, 5), ':b');
+plot(data(:, 1) / 3600.0, data(:, 7), 'xr');
+plot(data(:, 1) / 3600.0, data(:, 8), 'ok');
+
+data_runoff = load("accum_depth.out");
+plot(data_runoff(:, 1)/ 3600, data_runoff(:, 2), 'g')
+legend('accu infil', 'accum rech', 'accum evap', 'accum runoff');
+xlabel('Time (hr)');
+ylabel('f (cm)');
+
+h_fig3 = figure(3); hold on;
+# profile contains depth(positivie downward), water content, pressure. 
+data_50  = load ("panama_profile_day_50.txt");
+data_100 = load ("panama_profile_day_100.txt");
+data_150 = load ("panama_profile_day_150.txt");
+data_200 = load ("panama_profile_day_200.txt");
+
+plot(data_50(:, 2),  -data_50(:, 1),  'b');
+plot(data_100(:, 2), -data_100(:, 1), 'g');
+plot(data_150(:, 2), -data_150(:, 1), 'c');
+plot(data_200(:, 2), -data_200(:, 1), 'r');
+
+pause();
