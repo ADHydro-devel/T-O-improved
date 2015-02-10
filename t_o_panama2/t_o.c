@@ -4054,8 +4054,12 @@ int t_o_domains_equal(t_o_domain* domain1, t_o_domain* domain2)
 int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double field_capacity, double wilting_point, 
            int use_feddes, double field_capacity_suction, double wilting_point_suction, double* surfacewater_depth, double* evaporated_water)
 {
-  assert(domain->parameters->bin_water_content[1] <= wilting_point && wilting_point < field_capacity && 
+  if (FALSE == use_feddes)
+    {
+        assert(domain->parameters->bin_water_content[1] <= wilting_point && wilting_point < field_capacity && 
          field_capacity <= domain->parameters->bin_water_content[domain->parameters->num_bins]);
+    }
+
   
   int error     = FALSE;
   int bare_soil = FALSE;
@@ -4123,15 +4127,17 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
   // Step 2, remove water.
   double demand_ET    = actual_ET * dt;      // Demand ET water in meter of water.
   if (bare_soil)
-    { // Bare soil evaporation only, can take water from surfacewater_depth.
+    { // Take water from surfacewater_depth.
       if (demand_ET >= *surfacewater_depth)
         {
           demand_ET          -= *surfacewater_depth;
+          *evaporated_water  += *surfacewater_depth;
           *surfacewater_depth = 0.0;
         }
       else
         {
           *surfacewater_depth -= demand_ET;
+          *evaporated_water   += demand_ET;
           demand_ET            = 0.0;
         }
     }
@@ -4200,18 +4206,21 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
         } // End of slug.
       
       // Step 2.3, ET from groundwater front. 
-      if (demand_ET_dz > 0.0)
+      if (domain->yes_groundwater && demand_ET_dz > 0.0)
         {
           double bin_demand_ET_dz = demand_ET_dz;
-          if (root_depth > domain->groundwater_front[ii] && bin_demand_ET_dz > root_depth - domain->groundwater_front[ii])
+          if (root_depth > domain->groundwater_front[ii] )
             {
-              bin_demand_ET_dz = root_depth - domain->groundwater_front[ii];
+              if (bin_demand_ET_dz > root_depth - domain->groundwater_front[ii])
+                {
+                  bin_demand_ET_dz = root_depth - domain->groundwater_front[ii];
+                }
+              
+              // Modified Feb, 09, 2015. Originaly outside the loop and it was wrong.
+              demand_ET_dz                  -= bin_demand_ET_dz;
+              *evaporated_water             += bin_demand_ET_dz * domain->parameters->delta_water_content;
+              domain->groundwater_front[ii] += bin_demand_ET_dz;
             }
-          //printf("PET = %lf mm/hr , bin_demand_ET_dz = %lf \n", PET * 1000*3600, bin_demand_ET_dz); 
-          //getchar(); // FIXME, remove.
-          demand_ET_dz                  -= bin_demand_ET_dz;
-          *evaporated_water             += bin_demand_ET_dz * domain->parameters->delta_water_content;
-          domain->groundwater_front[ii] += bin_demand_ET_dz;
         }
        
       ii--;
