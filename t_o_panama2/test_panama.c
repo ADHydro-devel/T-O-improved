@@ -21,7 +21,7 @@ extern int t_o_domains_equal(t_o_domain* domain1, t_o_domain* domain2);
 #define ONE_MINUTE    (60.0)
 #define ONE_HOUR      (60.0 * ONE_MINUTE)
 #define ONE_DAY       (24.0 * ONE_HOUR)
-#define YES_PLOT
+//#define YES_PLOT
 
 void display_water(Display* the_display, Pixmap the_pixmap, GC the_gc, t_o_domain* domain, int bin, double top, double bot)
 {
@@ -306,7 +306,7 @@ int main(void)
   t_o_parameters* parameters;
   t_o_domain*     domain;
       int    ii, jj, error = FALSE;
-      int    num_bins              = 300;             // Number of bins.
+      int    num_bins              = 300;             // Number of bins.     ################################3
       double conductivity          = 1.0 / 360000.0; // Meters per second.
       double porosity              = 0.4;     // Unitless fraction.
       double residual_saturation   = 0.07;    // Unitless fraction.
@@ -349,10 +349,11 @@ int main(void)
       double rainfall             = 0.0;
   
   
-  int    test_id  = 1;  // ###################################################################################################################
+  int    test_id  = 104;  // ###################################################################################################################
   /*
-  test_id =  1, panama test.
+  test_id =  1, origianl panama test.
   test_id =  2, sand infiltration.
+  test_id = 101 - 112, tests using 12 USAD soil type with van Genucthen parameters.
   */
   if ( 1 == test_id)
     {
@@ -417,6 +418,247 @@ int main(void)
       delta_time            = 1.0;                                                     // The duration of the timestep in seconds.
       max_time              = 6.0 * ONE_HOUR;                                         // How long to run the simulation in seconds.
     }
+  else if ( 101 == test_id)
+    { // Panama test using Sand. 
+      conductivity          = 29.7 / 360000.0; // Meters per second.
+      porosity              = 0.43;     // Unitless fraction.
+      residual_saturation   = 0.045;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 14.5;      // One over meters.
+      vg_n                  = 2.68;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 102 == test_id)
+    {
+      conductivity          = 14.5917 / 360000.0; // Meters per second.
+      porosity              = 0.41;     // Unitless fraction.
+      residual_saturation   = 0.057;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 12.4;      // One over meters.
+      vg_n                  = 2.28;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 103 == test_id)
+    {
+      conductivity          = 4.42083 / 360000.0; // Meters per second.
+      porosity              = 0.41;     // Unitless fraction.
+      residual_saturation   = 0.065;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 7.5;      // One over meters.
+      vg_n                  = 1.89;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 104 == test_id)
+    {
+      conductivity          = 1.04 / 360000.0; // Meters per second.
+      porosity              = 0.43;     // Unitless fraction.
+      residual_saturation   = 0.078;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 3.6;      // One over meters.
+      vg_n                  = 1.56;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }  
+  else if ( 105 == test_id)
+    {
+      conductivity          = 0.25 / 360000.0; // Meters per second.
+      porosity              = 0.46;     // Unitless fraction.
+      residual_saturation   = 0.034;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 1.6;      // One over meters.
+      vg_n                  = 1.37;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 106 == test_id)
+    {
+      conductivity          = 0.45 / 360000.0; // Meters per second.
+      porosity              = 0.45;     // Unitless fraction.
+      residual_saturation   = 0.067;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 2.0;      // One over meters.
+      vg_n                  = 1.41;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 107 == test_id)
+    {
+      conductivity          = 1.31 / 360000.0; // Meters per second.
+      porosity              = 0.39;     // Unitless fraction.
+      residual_saturation   = 0.1;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 5.9;      // One over meters.
+      vg_n                  = 1.48;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 108 == test_id)
+    {
+      conductivity          = 0.26 / 360000.0; // Meters per second.
+      porosity              = 0.41;     // Unitless fraction.
+      residual_saturation   = 0.095;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 1.9;      // One over meters.
+      vg_n                  = 1.31;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 109 == test_id)
+    {
+      conductivity          = 0.07 / 360000.0; // Meters per second.
+      porosity              = 0.43;     // Unitless fraction.
+      residual_saturation   = 0.089;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 1.0;      // One over meters.
+      vg_n                  = 1.23;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 110 == test_id)
+    {
+      conductivity          = 0.12 / 360000.0; // Meters per second.
+      porosity              = 0.38;     // Unitless fraction.
+      residual_saturation   = 0.1;      // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 2.7;      // One over meters.
+      vg_n                  = 1.23;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 111 == test_id)
+    {
+      conductivity          = 0.02 / 360000.0; // Meters per second.
+      porosity              = 0.36;     // Unitless fraction.
+      residual_saturation   = 0.07;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 0.5;      // One over meters.
+      vg_n                  = 1.09;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  else if ( 112 == test_id)
+    {
+      conductivity          = 0.2 / 360000.0; // Meters per second.
+      porosity              = 0.38;     // Unitless fraction.
+      residual_saturation   = 0.068;    // Unitless fraction.
+      van_genutchen         = TRUE;     // Yes, use Van Genuchten.
+      vg_alpha              = 0.8;      // One over meters.
+      vg_n                  = 1.09;     // Unitless.
+      bc_lambda             = 5.5;    // Unitless.
+      bc_psib               = 0.37;     // Meters.
+      layer_top_depth       = 0.0;      // Meters.
+      layer_bottom_depth    = 1.0;      // Meters.     ##################################
+      yes_groundwater       = TRUE;     // Yes, simulate groundwater. #################################################################
+      yes_runoff            = TRUE;     // Yes, remove excess surface water after infilt step.
+      initial_water_content = 0.08;      // Unitless fraction.
+      water_table           = layer_bottom_depth;      // Meters.
+      
+      delta_time            = 10.0;                                                     // The duration of the timestep in seconds.
+      max_time              = 5750 * ONE_HOUR;                                         // How long to run the simulation in seconds.
+    }
+  
   if (t_o_parameters_alloc(&parameters, num_bins, conductivity, porosity, residual_saturation, van_genutchen,  vg_alpha, vg_n, bc_lambda, bc_psib))
     {
       fprintf(stderr, "ERROR: Could not allocate t_o_parameters.\n");
@@ -438,7 +680,7 @@ int main(void)
     /***********************/
    /* Run the simulation. */
   /***********************/
-  if ( 1 == test_id)
+  if ( 1 == test_id || 101 <= test_id)
     {
       // Read input rainfall file.
       FILE*  rain_fptr      = NULL;
@@ -455,7 +697,7 @@ int main(void)
            fscanf(rain_fptr, "%*d %*d %*d %*d %*d %lf %lf", &rainfall_input_intensity[ii], &potential_ET[ii]);  // Original data in mm /15 min.
            rainfall_input_time[ii]       = (ii - 1) * 15.0 * 60.0;  // In s.
            rainfall_input_intensity[ii] /= 900000.0;     // In m/s. 
-           rainfall_input_intensity[ii]*=5.0;            // convert back to real values.
+           rainfall_input_intensity[ii] *= 5.0;           // convert back to real values.
            potential_ET[ii]             /= 900000.0;     // In m/s.
          }
       fclose(rain_fptr);
@@ -475,7 +717,7 @@ int main(void)
   int get_4 = FALSE;
   //double acc_depth = 0.0;
   
-  if (1 == test_id)
+  if (1 == test_id  || 101 <= test_id)
     {
       if (NULL == (fptr_day_50 = fopen("panama_profile_day_50.txt", "w")) )
          {
@@ -544,16 +786,16 @@ int main(void)
   while (current_time < max_time)
     {
       // Rainfall.  ###########################################################
-      if (1 == test_id)
+      if (1 == test_id  || 101 <= test_id)
         {
           ii = 1;
           while (ii < 22972 && current_time >= rainfall_input_time[ii + 1])
             {
              ii++;
             }
-          PET           = potential_ET[ii];                  // m/s.
-          rainfall_rate = 1.0 * rainfall_input_intensity[ii];      // m/s.
-          rainfall      = rainfall_rate * delta_time; // Meters of water.
+          PET           = potential_ET[ii];                  // m/s.      ##################################### Set no PET.
+          rainfall_rate = rainfall_input_intensity[ii];      // m/s.
+          rainfall      = rainfall_rate * delta_time;        // Meters of water.
         }
       else if (2 == test_id)
         {
@@ -612,6 +854,14 @@ int main(void)
               exit(1);
             }
         }// End of ET for test 1.
+      else if (101 <= test_id)
+        {
+          if (t_o_ET(domain, delta_time, 0.5,       PET, 0.32,           0.03,           TRUE, 0.3, 150.0, &surfacewater_depth, &evaporated_water))
+            {
+              fprintf(stderr, "ERROR: t_o_timestep returned error.\n");
+              exit(1);
+            }
+        }
       
       accum_infil                += surfacewater_depth_old - surfacewater_depth;
 #ifdef INFILTRATION_OUTPUT_FILE
@@ -635,31 +885,31 @@ int main(void)
       display_domain(the_display, the_screen, the_window, the_pixmap, domain);     
 #endif
       //usleep(1000);
-     // printf("simulation time = %lf s.\n", current_time);
+       //printf("simulation time = %lf hr.\n", current_time / ONE_HOUR);
       //printf("Total water should be %0.20lf, is %0.20lf\n", total_water, surfacewater_depth + groundwater_recharge + t_o_total_water_in_domain(domain));
 
       // FIXME,  one simple way to implement no flow lower boundary, if groundwater_recharge is positive, put them back into domain.
       // What about negative groundwater_recharge???
-      if (1 == test_id)
+      /*if (1 == test_id)
         {
           if (groundwater_recharge > 0.0 ) //&& current_time < 28 * 24 * 3600.0)
            {
              //t_o_add_groundwater(domain, &groundwater_recharge);
            }
-        }
+        }*/
       
       if(yes_runoff)  // new FLO 21 Dec. 2014 
         {
-          runoff            +=surfacewater_depth;
-          surfacewater_depth =0.0;
+          runoff            += surfacewater_depth;
+          surfacewater_depth = 0.0;
         }
-      
-      assert(epsilon_equal(total_water, evaporated_water + surfacewater_depth + groundwater_recharge + t_o_total_water_in_domain(domain) + runoff));
+     
+     assert(epsilon_equal(total_water, evaporated_water + surfacewater_depth + groundwater_recharge + t_o_total_water_in_domain(domain) + runoff));
       
       fprintf(acc_depth_fptr, "%lf %lf\n", current_time, runoff * 100.0); // Time in s, runoff in cm.
       //fprintf(acc_depth_fptr,"%lf %lf\n",current_time/86400.0, t_o_total_water_in_domain(domain)); 
       
-      if ( 1 == test_id)
+      if ( 1 == test_id || 101 <= test_id)
         {
           if (abs(current_time - 50 * ONE_DAY) < delta_time && !get_1)
              {
@@ -702,15 +952,7 @@ int main(void)
                //getchar();
              } 
         } // End of ouput for test_id = 1;
-        
-       if (2 == test_id && (current_time == 0.25 * ONE_HOUR || current_time == 3 * ONE_HOUR || current_time == 3.25 * ONE_HOUR || current_time == 6 * ONE_HOUR))
-         {
-           getchar();
-         }
-       else if (3 == test_id && (current_time == 1 * ONE_HOUR || current_time == 3 * ONE_HOUR || current_time == 4 * ONE_HOUR || current_time == 6 * ONE_HOUR))
-         {
-           getchar();
-         }
+       
     } // End of time loop.
   time_end = time(NULL);
   printf("\nTotal simulation time  = %lf hours\n", max_time / ONE_HOUR);

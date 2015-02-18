@@ -1519,6 +1519,36 @@ void infiltrate_distance(t_o_domain* domain, double dt, int first_bin, double su
           distance[ii] = ((domain->parameters->cumulative_conductivity[last_bin] - domain->parameters->cumulative_conductivity[first_bin - 1]) /
               (domain->parameters->bin_water_content[last_bin] - domain->parameters->bin_water_content[first_bin - 1])) *
               ((last_bin_capillary_suction + surfacewater_head) / domain->surface_front[ii] + 1) * dt;
+          
+          // Runge-Kutta 4 implementation.
+          /*
+          double k1, k2, k3, k4, k0;
+          k0 = ((domain->parameters->cumulative_conductivity[last_bin] - domain->parameters->cumulative_conductivity[first_bin - 1]) /
+              (domain->parameters->bin_water_content[last_bin] - domain->parameters->bin_water_content[first_bin - 1]));
+          k1 = k0 * ((last_bin_capillary_suction + surfacewater_head) /  domain->surface_front[ii] + 1.0) * dt;
+          k2 = k0 * ((last_bin_capillary_suction + surfacewater_head) / (domain->surface_front[ii] + 0.5 * k1) + 1.0) * dt;
+          k3 = k0 * ((last_bin_capillary_suction + surfacewater_head) / (domain->surface_front[ii] + 0.5 * k2) + 1.0) * dt;
+          k4 = k0 * ((last_bin_capillary_suction + surfacewater_head) / (domain->surface_front[ii] + k3) + 1.0) * dt;
+          distance[ii] = (k1 + 2.0 * k2 + 2.0 * k3 + k4) / 6.0;
+          */
+          
+          // 1-GARTO type.
+          /*distance[ii] = (domain->parameters->cumulative_conductivity[ii] - domain->parameters->cumulative_conductivity[ii - 1]) /
+              (domain->parameters->delta_water_content) *
+              ((last_bin_capillary_suction + surfacewater_head) / domain->surface_front[ii] + 1) * dt;
+          */
+          /*
+          // 2-exact k'
+          double saturation  = (domain->parameters->bin_water_content[ii] - 
+                                  (domain->parameters->bin_water_content[1] - domain->parameters->delta_water_content)) /
+                                (domain->parameters->bin_water_content[domain->parameters->num_bins] - 
+                                  (domain->parameters->bin_water_content[1] - domain->parameters->delta_water_content)); 
+              
+          distance[ii] = domain->parameters->cumulative_conductivity[domain->parameters->num_bins] * (3.0 + 2.0 / domain->parameters->bc_lambda) * 
+                         pow(saturation, 2.0 + 2.0 / domain->parameters->bc_lambda) / (domain->parameters->bin_water_content[domain->parameters->num_bins] - 
+                                  (domain->parameters->bin_water_content[1] - domain->parameters->delta_water_content)) * 
+                           ((last_bin_capillary_suction + surfacewater_head) / domain->surface_front[ii] + 1) * dt;
+            */  
         } // End if (dry_depth >= domain->surface_front[ii]).
     } // End for (ii = first_bin; ii <= domain->parameters->num_bins; ii++).
 }
@@ -1995,6 +2025,8 @@ double groundwater_distance(t_o_domain* domain, int bin, int first_bin, double d
           // If groundwater falls below the water table there are numerical problems.  Move the groundwater to 10% of its capillary head above the water table.
           fprintf(stderr, "WARNING: Groundwater below water table moved up to 10 percent of capillary head above water table.\n");
           distance = (water_table - 0.1 * domain->parameters->bin_capillary_suction[bin]) - domain->groundwater_front[bin];
+          printf("bin = %d water_table = %lf, domain->groundwater_front[bin] = %lf \n", bin, water_table, domain->groundwater_front[bin]); getchar();
+          // FIXME, remove me, Feb, 09, 2015.
         }
       else
         {
@@ -2005,6 +2037,7 @@ double groundwater_distance(t_o_domain* domain, int bin, int first_bin, double d
                                    + (domain->parameters->bin_capillary_suction[bin] - domain->parameters->bc_psib) / 
                                      (1.0 - 0.5 * inflow_rate / domain->parameters->cumulative_conductivity[bin]
                                           - 0.5 * inflow_rate / domain->parameters->cumulative_conductivity[domain->parameters->num_bins]);
+
               if (water_table - domain->layer_top_depth > suction_new || 
                   water_table - domain->layer_top_depth < domain->parameters->bin_capillary_suction[domain->parameters->num_bins])
                 {
@@ -4054,28 +4087,32 @@ int t_o_domains_equal(t_o_domain* domain1, t_o_domain* domain2)
 int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double field_capacity, double wilting_point, 
            int use_feddes, double field_capacity_suction, double wilting_point_suction, double* surfacewater_depth, double* evaporated_water)
 {
-  if (FALSE == use_feddes)
-    {
-        assert(domain->parameters->bin_water_content[1] <= wilting_point && wilting_point < field_capacity && 
-         field_capacity <= domain->parameters->bin_water_content[domain->parameters->num_bins]);
-    }
-
-  
   int error     = FALSE;
   int bare_soil = FALSE;
   int ii;
-
-  if (root_depth > domain->layer_bottom_depth - domain->layer_top_depth)
+  
+  if (root_depth < domain->layer_top_depth || PET <= 0.0)
     {
-      root_depth = domain->layer_bottom_depth - domain->layer_top_depth;
+      return error;
     }
-  else if (root_depth < 0.1)
+ 
+  if (FALSE == use_feddes)
+    {
+        assert(domain->parameters->bin_water_content[1] <= wilting_point && wilting_point < field_capacity && 
+               field_capacity <= domain->parameters->bin_water_content[domain->parameters->num_bins]);
+    }
+  
+  if (root_depth > domain->layer_bottom_depth)
+    {
+      root_depth = domain->layer_bottom_depth;
+    }
+  else if (root_depth < 0.1 + domain->layer_top_depth)
     {
       if (epsilon_equal(0.0, root_depth))
         {
           bare_soil = TRUE;
         }
-      root_depth = 0.1; // If root depth less than 0.1 m, set it as 0.1 m.
+      root_depth    = 0.1 + domain->layer_top_depth; // If root depth less than 0.1 m, set it as 0.1 m.
     }
   
   // Step 1, calculate actual ET form PET, based on water content of last bin, or water content of last slug with root depth.
@@ -4110,7 +4147,7 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
          }
        else
          {
-           actual_ET = PET;
+           // Do nothing, actual_ET = PET.
          }
      }
   else if (!bare_soil)
@@ -4123,7 +4160,16 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
         {
           actual_ET = PET * (water_content - wilting_point) / (field_capacity - wilting_point);
         }
+      else if (water_content >= field_capacity)
+        {
+          // Do nothing, actual_ET = PET.
+        }
     }
+  else if (bare_soil)
+    {
+      // Bare soil, do nothing, actual_ET = PET.
+    }
+
   // Step 2, remove water.
   double demand_ET    = actual_ET * dt;      // Demand ET water in meter of water.
   if (bare_soil)
@@ -4155,7 +4201,7 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
               bin_demand_ET_dz = root_depth - domain->layer_top_depth;
             }
           
-          if (domain->surface_front[ii] - domain->layer_top_depth < bin_demand_ET_dz)
+          if (domain->surface_front[ii] - domain->layer_top_depth <= bin_demand_ET_dz)
             { // Water in a bin is less than demand, remove all.
               *evaporated_water        += (domain->surface_front[ii] - domain->layer_top_depth) * domain->parameters->delta_water_content;
               domain->surface_front[ii] = domain->layer_top_depth;
@@ -4178,7 +4224,7 @@ int t_o_ET(t_o_domain* domain, double dt, double root_depth, double PET, double 
         
       // Step 2.2, ET from slugs.
       slug* temp_slug = domain->top_slug[ii]; 
-      while (NULL != temp_slug && temp_slug->top <= root_depth)
+      while (NULL != temp_slug && temp_slug->top < root_depth)
         {
           // Save a pointer to the slug below get_slug in case we need to kill get_slug.
           slug* next_slug = temp_slug->next;
